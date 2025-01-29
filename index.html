@@ -144,15 +144,86 @@
                 flex-direction: column;
             }
         }
+
+        #itemBlocks {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .item-block {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .item-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .remove-item {
+            padding: 8px 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .remove-item:hover {
+            background: #ff0000;
+        }
+
+        #bulkInputContainer {
+            margin: 15px 0;
+        }
+
+        #bulkInput {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .button-container button {
+            min-width: 120px;
+        }
     </style>
 </head>
 <body>
     <div class="bingo-container">
         <h1>Generator Bingo</h1>
         <div class="controls">
-            <textarea id="items" placeholder="Wpisz elementy bingo, każdy w nowej linii"></textarea>
             <div class="button-container">
+                <button onclick="showBulkInput()">Dodaj wiele pól</button>
+                <button onclick="addNewBlock()">Dodaj pole</button>
                 <button onclick="generateBoard()">Generuj planszę</button>
+            </div>
+            <div id="bulkInputContainer" style="display: none;">
+                <textarea id="bulkInput" placeholder="Wklej elementy, każdy w nowej linii"></textarea>
+                <div class="button-container">
+                    <button onclick="addBulkItems()">Dodaj elementy</button>
+                    <button onclick="hideBulkInput()">Anuluj</button>
+                </div>
+            </div>
+            <div id="itemBlocks">
+                <div class="item-block">
+                    <input type="text" class="item-input" placeholder="Wpisz element bingo">
+                    <button class="remove-item" onclick="removeBlock(this)">×</button>
+                </div>
             </div>
         </div>
         <div id="bingoBoard" class="bingo-board"></div>
@@ -160,10 +231,24 @@
 
     <script>
         function loadSavedState() {
-            // Wczytaj zapisane elementy
             const savedItems = localStorage.getItem('bingoItems');
             if (savedItems) {
-                document.getElementById('items').value = savedItems;
+                const items = savedItems.split('\n');
+                const itemBlocks = document.getElementById('itemBlocks');
+                itemBlocks.innerHTML = ''; // Wyczyść istniejące bloczki
+                
+                items.forEach(item => {
+                    const block = document.createElement('div');
+                    block.className = 'item-block';
+                    block.innerHTML = `
+                        <input type="text" class="item-input" value="${item}">
+                        <button class="remove-item" onclick="removeBlock(this)">×</button>
+                    `;
+                    itemBlocks.appendChild(block);
+                });
+            } else {
+                // Dodaj pierwszy pusty bloczek
+                addNewBlock();
             }
 
             // Wczytaj zapisaną planszę
@@ -200,9 +285,9 @@
         }
 
         function generateBoard() {
-            const items = document.getElementById('items').value
-                .split('\n')
-                .map(item => item.trim())
+            const inputs = document.getElementsByClassName('item-input');
+            const items = Array.from(inputs)
+                .map(input => input.value.trim())
                 .filter(item => item !== '');
 
             if (items.length < 24) {
@@ -262,6 +347,90 @@
                 .map(cell => cell.dataset.index);
             localStorage.setItem('markedCells', JSON.stringify(markedIndices));
         }
+
+        function getExistingItems() {
+            const inputs = document.getElementsByClassName('item-input');
+            return Array.from(inputs)
+                .map(input => input.value.trim().toLowerCase())
+                .filter(item => item !== '');
+        }
+
+        function addNewBlock(value = '') {
+            if (value && isDuplicate(value)) {
+                alert(`Element "${value}" już istnieje na liście!`);
+                return;
+            }
+
+            const itemBlocks = document.getElementById('itemBlocks');
+            const newBlock = document.createElement('div');
+            newBlock.className = 'item-block';
+            newBlock.innerHTML = `
+                <input type="text" class="item-input" placeholder="Wpisz element bingo" value="${value}" oninput="checkDuplicate(this)">
+                <button class="remove-item" onclick="removeBlock(this)">×</button>
+            `;
+            itemBlocks.appendChild(newBlock);
+        }
+
+        function isDuplicate(value) {
+            const existingItems = getExistingItems();
+            return existingItems.includes(value.trim().toLowerCase());
+        }
+
+        function checkDuplicate(input) {
+            const value = input.value.trim();
+            if (value === '') return;
+
+            const existingItems = getExistingItems();
+            const currentIndex = Array.from(document.getElementsByClassName('item-input')).indexOf(input);
+            const otherItems = existingItems.filter((_, index) => index !== currentIndex);
+
+            if (otherItems.includes(value.toLowerCase())) {
+                alert(`Element "${value}" już istnieje na liście!`);
+                input.value = '';
+            }
+        }
+
+        function removeBlock(button) {
+            const block = button.parentElement;
+            if (document.getElementsByClassName('item-block').length > 1) {
+                block.remove();
+            }
+        }
+
+        function showBulkInput() {
+            document.getElementById('bulkInputContainer').style.display = 'block';
+        }
+
+        function hideBulkInput() {
+            document.getElementById('bulkInputContainer').style.display = 'none';
+            document.getElementById('bulkInput').value = '';
+        }
+
+        function addBulkItems() {
+            const bulkText = document.getElementById('bulkInput').value;
+            const items = bulkText.split('\n')
+                .map(item => item.trim())
+                .filter(item => item !== '');
+
+            const duplicates = [];
+            const uniqueItems = items.filter(item => {
+                if (isDuplicate(item)) {
+                    duplicates.push(item);
+                    return false;
+                }
+                return true;
+            });
+
+            if (duplicates.length > 0) {
+                alert(`Następujące elementy zostały pominięte, ponieważ już istnieją:\n${duplicates.join('\n')}`);
+            }
+
+            uniqueItems.forEach(item => addNewBlock(item));
+            hideBulkInput();
+        }
+
+        // Wywołaj loadSavedState przy załadowaniu strony
+        window.onload = loadSavedState;
     </script>
 </body>
 </html>
