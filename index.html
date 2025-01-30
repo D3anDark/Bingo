@@ -230,12 +230,14 @@
     </div>
 
     <script>
+        let currentBoardState = [];
+
         function loadSavedState() {
             const savedItems = localStorage.getItem('bingoItems');
             if (savedItems) {
                 const items = savedItems.split('\n');
                 const itemBlocks = document.getElementById('itemBlocks');
-                itemBlocks.innerHTML = ''; // Wyczyść istniejące bloczki
+                itemBlocks.innerHTML = '';
                 
                 items.forEach(item => {
                     const block = document.createElement('div');
@@ -247,24 +249,21 @@
                     itemBlocks.appendChild(block);
                 });
             } else {
-                // Dodaj pierwszy pusty bloczek
                 addNewBlock();
             }
 
-            // Wczytaj zapisaną planszę
+            // Wczytaj zapisaną planszę i zaznaczone pola
             const savedBoard = localStorage.getItem('bingoBoard');
             const savedMarkedCells = localStorage.getItem('markedCells');
 
-            if (savedBoard && savedMarkedCells) {
+            if (savedBoard) {
                 currentBoardState = JSON.parse(savedBoard);
-                const markedIndices = JSON.parse(savedMarkedCells);
+                displayBoard(currentBoardState);
                 
-                const board = document.getElementById('bingoBoard');
-                if (currentBoardState.length > 0) {
-                    generateBoard();
-                    
+                if (savedMarkedCells) {
+                    const markedIndices = JSON.parse(savedMarkedCells);
                     markedIndices.forEach(index => {
-                        const cell = board.children[index];
+                        const cell = document.querySelector(`.bingo-cell[data-index="${index}"]`);
                         if (cell) {
                             cell.classList.add('marked');
                         }
@@ -272,9 +271,6 @@
                 }
             }
         }
-
-        // Dodaj zmienną do przechowywania aktualnego stanu planszy
-        let currentBoardState = [];
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -295,19 +291,27 @@
                 return;
             }
 
-            // Zapisz elementy w localStorage
             localStorage.setItem('bingoItems', items.join('\n'));
+            
+            // Generuj nowy układ planszy
+            currentBoardState = shuffleArray([...items]).slice(0, 24);
+            localStorage.setItem('bingoBoard', JSON.stringify(currentBoardState));
+            
+            // Wyczyść zaznaczone pola przy nowej generacji
+            localStorage.removeItem('markedCells');
+            
+            displayBoard(currentBoardState);
+        }
 
-            const shuffledItems = shuffleArray([...items]).slice(0, 24);
+        function displayBoard(boardItems) {
             const board = document.getElementById('bingoBoard');
             board.innerHTML = '';
-            currentBoardState = shuffledItems; // Zapisz aktualny stan
 
             // Dodaj pierwsze 12 elementów
             for (let i = 0; i < 12; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'bingo-cell';
-                cell.textContent = shuffledItems[i];
+                cell.textContent = boardItems[i];
                 cell.dataset.index = i;
                 cell.onclick = toggleMark;
                 board.appendChild(cell);
@@ -325,24 +329,18 @@
             for (let i = 12; i < 24; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'bingo-cell';
-                cell.textContent = shuffledItems[i];
+                cell.textContent = boardItems[i];
                 cell.dataset.index = i + 1;
                 cell.onclick = toggleMark;
                 board.appendChild(cell);
             }
-
-            // Zapisz stan planszy
-            localStorage.setItem('bingoBoard', JSON.stringify(currentBoardState));
-            saveMarkedState();
         }
 
         function toggleMark(event) {
             const cell = event.target;
             cell.classList.toggle('marked');
-            saveMarkedState();
-        }
-
-        function saveMarkedState() {
+            
+            // Zapisz stan zaznaczonych pól
             const markedIndices = Array.from(document.querySelectorAll('.bingo-cell.marked'))
                 .map(cell => cell.dataset.index);
             localStorage.setItem('markedCells', JSON.stringify(markedIndices));
