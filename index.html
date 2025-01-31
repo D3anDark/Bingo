@@ -212,6 +212,10 @@
                 <button onclick="addNewBlock()">Dodaj pole</button>
                 <button onclick="generateBoard()">Generuj planszę</button>
             </div>
+            <div class="button-container">
+                <button onclick="exportData()">Eksportuj dane</button>
+                <button onclick="importData()">Importuj dane</button>
+            </div>
             <div id="bulkInputContainer" style="display: none;">
                 <textarea id="bulkInput" placeholder="Wklej elementy, każdy w nowej linii"></textarea>
                 <div class="button-container">
@@ -425,6 +429,77 @@
 
             uniqueItems.forEach(item => addNewBlock(item));
             hideBulkInput();
+        }
+
+        function exportData() {
+            const data = {
+                items: getExistingItems(),
+                board: currentBoardState,
+                markedCells: Array.from(document.querySelectorAll('.bingo-cell.marked'))
+                    .map(cell => cell.dataset.index)
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bingo_data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json,.txt';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = event => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        
+                        // Importuj elementy
+                        const itemBlocks = document.getElementById('itemBlocks');
+                        itemBlocks.innerHTML = '';
+                        data.items.forEach(item => addNewBlock(item));
+                        
+                        // Zapisz do localStorage
+                        localStorage.setItem('bingoItems', data.items.join('\n'));
+                        
+                        // Importuj planszę
+                        if (data.board && data.board.length > 0) {
+                            currentBoardState = data.board;
+                            localStorage.setItem('bingoBoard', JSON.stringify(data.board));
+                            displayBoard(data.board);
+                            
+                            // Przywróć zaznaczone pola
+                            if (data.markedCells) {
+                                data.markedCells.forEach(index => {
+                                    const cell = document.querySelector(`.bingo-cell[data-index="${index}"]`);
+                                    if (cell) {
+                                        cell.classList.add('marked');
+                                    }
+                                });
+                                localStorage.setItem('markedCells', JSON.stringify(data.markedCells));
+                            }
+                        }
+                        
+                        alert('Dane zostały zaimportowane pomyślnie!');
+                    } catch (error) {
+                        alert('Błąd podczas importowania danych. Upewnij się, że plik jest w prawidłowym formacie.');
+                        console.error(error);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
         }
 
         // Wywołaj loadSavedState przy załadowaniu strony
