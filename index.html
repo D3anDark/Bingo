@@ -238,41 +238,32 @@
 
         function loadSavedState() {
             const savedItems = localStorage.getItem('bingoItems');
+            const itemBlocks = document.getElementById('itemBlocks');
+            
             if (savedItems) {
                 const items = savedItems.split('\n');
-                const itemBlocks = document.getElementById('itemBlocks');
                 itemBlocks.innerHTML = '';
-                
-                items.forEach(item => {
-                    const block = document.createElement('div');
-                    block.className = 'item-block';
-                    block.innerHTML = `
-                        <input type="text" class="item-input" value="${item}">
-                        <button class="remove-item" onclick="removeBlock(this)">×</button>
-                    `;
-                    itemBlocks.appendChild(block);
-                });
+                items.forEach(item => addNewBlock(item));
             } else {
+                // Dodaj jeden początkowy blok jeśli brak zapisanych danych
                 addNewBlock();
             }
 
-            // Wczytaj zapisaną planszę i zaznaczone pola
+            // Wczytaj zapisaną planszę
             const savedBoard = localStorage.getItem('bingoBoard');
-            const savedMarkedCells = localStorage.getItem('markedCells');
-
             if (savedBoard) {
                 currentBoardState = JSON.parse(savedBoard);
                 displayBoard(currentBoardState);
-                
-                if (savedMarkedCells) {
-                    const markedIndices = JSON.parse(savedMarkedCells);
-                    markedIndices.forEach(index => {
-                        const cell = document.querySelector(`.bingo-cell[data-index="${index}"]`);
-                        if (cell) {
-                            cell.classList.add('marked');
-                        }
-                    });
-                }
+            }
+
+            // Wczytaj zaznaczone pola
+            const savedMarkedCells = localStorage.getItem('markedCells');
+            if (savedMarkedCells) {
+                const markedIndices = JSON.parse(savedMarkedCells);
+                markedIndices.forEach(index => {
+                    const cell = document.querySelector(`.bingo-cell[data-index="${index}"]`);
+                    if (cell && index !== 12) cell.classList.add('marked'); // Ignoruj FREE
+                });
             }
         }
 
@@ -311,41 +302,34 @@
             const board = document.getElementById('bingoBoard');
             board.innerHTML = '';
 
-            // Dodaj pierwsze 12 elementów
-            for (let i = 0; i < 12; i++) {
+            // Generuj komórki
+            boardItems.forEach((item, index) => {
                 const cell = document.createElement('div');
                 cell.className = 'bingo-cell';
-                cell.textContent = boardItems[i];
-                cell.dataset.index = i;
+                cell.textContent = item;
+                cell.dataset.index = index < 12 ? index : index + 1; // Dostosowanie indeksów dla FREE
                 cell.onclick = toggleMark;
                 board.appendChild(cell);
-            }
 
-            // Dodaj pole FREE w środku
-            const freeCell = document.createElement('div');
-            freeCell.className = 'bingo-cell marked';
-            freeCell.textContent = 'FREE';
-            freeCell.dataset.index = 12;
-            freeCell.onclick = toggleMark;
-            board.appendChild(freeCell);
-
-            // Dodaj pozostałe 12 elementów
-            for (let i = 12; i < 24; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'bingo-cell';
-                cell.textContent = boardItems[i];
-                cell.dataset.index = i + 1;
-                cell.onclick = toggleMark;
-                board.appendChild(cell);
-            }
+                if (index === 11) {
+                    const freeCell = document.createElement('div');
+                    freeCell.className = 'bingo-cell marked';
+                    freeCell.textContent = 'FREE';
+                    freeCell.dataset.index = "12";
+                    board.appendChild(freeCell);
+                }
+            });
         }
 
         function toggleMark(event) {
             const cell = event.target;
+            if (cell.dataset.index === "12") return; // Blokada zmiany stanu dla FREE
             cell.classList.toggle('marked');
-            
-            // Zapisz stan zaznaczonych pól
-            const markedIndices = Array.from(document.querySelectorAll('.bingo-cell.marked'))
+            saveMarkedCells();
+        }
+
+        function saveMarkedCells() {
+            const markedIndices = Array.from(document.querySelectorAll('.bingo-cell.marked:not([data-index="12"])'))
                 .map(cell => cell.dataset.index);
             localStorage.setItem('markedCells', JSON.stringify(markedIndices));
         }
@@ -432,22 +416,28 @@
         }
 
         function exportData() {
-            const data = {
-                items: getExistingItems(),
-                board: currentBoardState,
-                markedCells: Array.from(document.querySelectorAll('.bingo-cell.marked'))
-                    .map(cell => cell.dataset.index)
-            };
+            try {
+                const data = {
+                    items: getExistingItems(),
+                    board: currentBoardState,
+                    markedCells: Array.from(document.querySelectorAll('.bingo-cell.marked'))
+                        .map(cell => cell.dataset.index),
+                    exportDate: new Date().toISOString() // Add export timestamp
+                };
 
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'bingo_data.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'bingo_data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Błąd podczas eksportowania danych.');
+                console.error(error);
+            }
         }
 
         function importData() {
