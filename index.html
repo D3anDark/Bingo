@@ -108,6 +108,8 @@
             font-family: inherit;
             background-color: #f0f0f0;
             color: #000000;
+            width: auto;
+            display: inline-block;
         }
 
         button:first-child {
@@ -137,11 +139,13 @@
             }
 
             button {
-                width: 100%;
+                width: auto;
+                padding: 8px 16px;
             }
 
             .button-container {
-                flex-direction: column;
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
 
@@ -200,6 +204,110 @@
 
         .button-container button {
             min-width: 120px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .bingo-container {
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin: 10px 0;
+            }
+
+            .controls {
+                padding: 10px;
+            }
+
+            .button-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .button-container button {
+                width: auto;
+                padding: 8px 16px;
+                font-size: 14px;
+                min-width: unset;
+                flex: 0 1 auto;
+            }
+
+            .bingo-board {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 2px;
+                padding: 2px;
+                margin: 8px 0;
+                width: 100%;
+            }
+
+            .bingo-cell {
+                padding: 4px;
+                font-size: 11px;
+                min-height: 40px;
+                border-width: 1px;
+                line-height: 1.1;
+            }
+
+            .item-block {
+                flex-direction: row;
+                margin-bottom: 8px;
+            }
+
+            .item-input {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .remove-item {
+                padding: 6px 10px;
+                font-size: 16px;
+            }
+
+            #bulkInput {
+                height: 120px;
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .bingo-container {
+                padding: 5px;
+            }
+
+            .bingo-cell {
+                padding: 2px;
+                font-size: 10px;
+                min-height: 35px;
+                line-height: 1;
+            }
+
+            .bingo-board {
+                gap: 1px;
+                padding: 1px;
+                width: 100%;
+            }
+
+            .button-container {
+                gap: 6px;
+            }
+
+            .button-container button {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+
+        @media screen and (max-width: 360px) {
+            .bingo-cell {
+                padding: 1px;
+                font-size: 9px;
+                min-height: 30px;
+            }
         }
     </style>
 </head>
