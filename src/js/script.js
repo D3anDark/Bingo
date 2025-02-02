@@ -1,8 +1,19 @@
 let currentBoardState = [];
+let useFreeSpace = true;
 
 function loadSavedState() {
     const savedItems = localStorage.getItem('bingoItems');
     const itemBlocks = document.getElementById('itemBlocks');
+    const savedBoardSize = localStorage.getItem('boardSize');
+    
+    if (savedBoardSize) {
+        document.getElementById('boardSize').value = savedBoardSize;
+        useFreeSpace = savedBoardSize === '5' ? 
+            (localStorage.getItem('useFreeSpace') !== 'false') : false;
+    } else {
+        // Domyślne ustawienia przy pierwszym uruchomieniu
+        useFreeSpace = document.getElementById('boardSize').value === '5';
+    }
     
     if (savedItems) {
         const items = savedItems.split('\n');
@@ -44,50 +55,76 @@ function generateBoard() {
     const items = Array.from(inputs)
         .map(input => input.value.trim())
         .filter(item => item !== '');
+    
+    const boardSize = parseInt(document.getElementById('boardSize').value);
+    const hasFreeSpace = boardSize === 5 && useFreeSpace;
+    const requiredItems = hasFreeSpace ? (boardSize * boardSize) - 1 : boardSize * boardSize;
 
-    if (items.length < 24) {
-        alert('Wprowadź co najmniej 24 elementy!');
+    if (items.length < requiredItems) {
+        alert(`Wprowadź co najmniej ${requiredItems} elementów!`);
         return;
     }
 
     localStorage.setItem('bingoItems', items.join('\n'));
+    localStorage.setItem('boardSize', boardSize);
+    localStorage.setItem('useFreeSpace', useFreeSpace);
     
-    // Generuj nowy układ planszy
-    currentBoardState = shuffleArray([...items]).slice(0, 24);
+    currentBoardState = shuffleArray([...items]).slice(0, requiredItems);
     localStorage.setItem('bingoBoard', JSON.stringify(currentBoardState));
-    
-    // Wyczyść zaznaczone pola przy nowej generacji
     localStorage.removeItem('markedCells');
     
-    displayBoard(currentBoardState);
+    displayBoard(currentBoardState, boardSize);
 }
 
-function displayBoard(boardItems) {
+function displayBoard(boardItems, boardSize = 5) {
     const board = document.getElementById('bingoBoard');
     board.innerHTML = '';
+    board.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
 
-    // Generuj komórki
-    boardItems.forEach((item, index) => {
-        const cell = document.createElement('div');
-        cell.className = 'bingo-cell';
-        cell.textContent = item;
-        cell.dataset.index = index < 12 ? index : index + 1; // Dostosowanie indeksów dla FREE
-        cell.onclick = toggleMark;
-        board.appendChild(cell);
+    const hasFreeSpace = boardSize === 5 && useFreeSpace;
+    const centerIndex = Math.floor(boardSize * boardSize / 2);
+    
+    if (hasFreeSpace) {
+        // Logika dla planszy 5x5 z polem FREE
+        boardItems.forEach((item, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'bingo-cell';
+            cell.textContent = item;
+            cell.dataset.index = index < centerIndex ? index : index + 1;
+            cell.onclick = toggleMark;
+            board.appendChild(cell);
 
-        if (index === 11) {
-            const freeCell = document.createElement('div');
-            freeCell.className = 'bingo-cell marked';
-            freeCell.textContent = 'FREE';
-            freeCell.dataset.index = "12";
-            board.appendChild(freeCell);
-        }
-    });
+            if (index === centerIndex - 1) {
+                const freeCell = document.createElement('div');
+                freeCell.className = 'bingo-cell marked';
+                freeCell.textContent = 'FREE';
+                freeCell.dataset.index = centerIndex.toString();
+                board.appendChild(freeCell);
+            }
+        });
+    } else {
+        // Logika dla pozostałych plansz (bez FREE)
+        boardItems.forEach((item, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'bingo-cell';
+            cell.textContent = item;
+            cell.dataset.index = index.toString();
+            cell.onclick = toggleMark;
+            board.appendChild(cell);
+        });
+    }
+    
+    updateMarkedCounter();
 }
 
 function toggleMark(event) {
     const cell = event.target;
-    if (cell.dataset.index === "12") return; // Blokada zmiany stanu dla FREE
+    const boardSize = parseInt(document.getElementById('boardSize').value);
+    const centerIndex = Math.floor(boardSize * boardSize / 2);
+    
+    // Blokuj zmianę stanu tylko dla FREE w planszy 5x5
+    if (boardSize === 5 && cell.dataset.index === centerIndex.toString()) return;
+    
     cell.classList.toggle('marked');
     saveMarkedCells();
     updateMarkedCounter();
@@ -258,8 +295,16 @@ function importData() {
 }
 
 function updateMarkedCounter() {
-    const markedCount = document.querySelectorAll('.bingo-cell.marked:not([data-index="12"])').length;
-    document.getElementById('markedCounter').textContent = `Zaznaczone pola: ${markedCount}/24`;
+    const boardSize = parseInt(document.getElementById('boardSize').value);
+    const hasFreeSpace = boardSize === 5 && useFreeSpace;
+    const totalCells = hasFreeSpace ? (boardSize * boardSize) - 1 : boardSize * boardSize;
+    const centerIndex = Math.floor(boardSize * boardSize / 2);
+    
+    const markedCount = hasFreeSpace 
+        ? document.querySelectorAll(`.bingo-cell.marked:not([data-index="${centerIndex}"])`).length
+        : document.querySelectorAll('.bingo-cell.marked').length;
+        
+    document.getElementById('markedCounter').textContent = `Zaznaczone pola: ${markedCount}/${totalCells}`;
 }
 
 function resetMarks() {
@@ -302,5 +347,80 @@ function resetAll() {
     }
 }
 
-// Wywołaj loadSavedState przy załadowaniu strony
-window.onload = loadSavedState;
+// Dodaj nowe funkcje do obsługi modalu
+function showBoardSettings() {
+    const modal = document.getElementById('settingsModal');
+    const freeSpaceCheckbox = document.getElementById('hasFreeSpace');
+    const boardSize = document.getElementById('boardSize');
+    
+    // Aktualizuj stan checkboxa i widoczność opcji
+    if (boardSize.value === '5') {
+        document.getElementById('freeSpaceOption').style.display = 'block';
+        freeSpaceCheckbox.checked = useFreeSpace;
+    } else {
+        document.getElementById('freeSpaceOption').style.display = 'none';
+        freeSpaceCheckbox.checked = false;
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').style.display = 'none';
+}
+
+function applySettings() {
+    const newBoardSize = parseInt(document.getElementById('boardSize').value);
+    const newUseFreeSpace = newBoardSize === 5 ? 
+        document.getElementById('hasFreeSpace').checked : false;
+    
+    useFreeSpace = newUseFreeSpace;
+    localStorage.setItem('useFreeSpace', useFreeSpace);
+    
+    // Regeneruj planszę z nowymi ustawieniami
+    generateBoard();
+    closeSettings();
+}
+
+// Dodaj obsługę zmiany rozmiaru planszy
+document.getElementById('boardSize').addEventListener('change', function(e) {
+    const freeSpaceOption = document.getElementById('freeSpaceOption');
+    const hasFreeSpaceCheckbox = document.getElementById('hasFreeSpace');
+    
+    if (e.target.value === '5') {
+        freeSpaceOption.style.display = 'block';
+        hasFreeSpaceCheckbox.checked = true; // Domyślnie włącz FREE dla 5x5
+        useFreeSpace = true;
+    } else {
+        freeSpaceOption.style.display = 'none';
+        hasFreeSpaceCheckbox.checked = false;
+        useFreeSpace = false;
+    }
+});
+
+// Dodaj obsługę kliknięcia poza modalem
+window.onclick = function(event) {
+    const modal = document.getElementById('settingsModal');
+    if (event.target === modal) {
+        closeSettings();
+    }
+}
+
+// Dodaj na początku pliku
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+// Dodaj do window.onload
+window.onload = function() {
+    // Wczytaj zapisany motyw
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Wczytaj resztę zapisanego stanu
+    loadSavedState();
+}
