@@ -33,11 +33,19 @@
                 <button onclick="showBulkInput()">Dodaj wiele pól</button>
                 <button onclick="addNewBlock()">Dodaj pole</button>
                 <button onclick="generateBoard()">Generuj planszę</button>
+                <button onclick="toggleMoreOptions()" class="more-options-button">
+                    Więcej opcji
+                    <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
             </div>
-            <div class="button-container">
-                <button onclick="exportData()">Eksportuj dane</button>
-                <button onclick="importData()">Importuj dane</button>
-                <button onclick="resetAll()" style="background-color: #dc3545; color: white;">Reset wszystkiego</button>
+            <div class="more-options-container" style="display: none;">
+                <div class="button-container">
+                    <button onclick="exportData()">Eksportuj dane</button>
+                    <button onclick="importData()">Importuj dane</button>
+                    <button onclick="resetAll()" style="background-color: #dc3545; color: white;">Reset wszystkiego</button>
+                </div>
             </div>
             <div id="bulkInputContainer" style="display: none;">
                 <textarea id="bulkInput" placeholder="Wklej elementy, każdy w nowej linii"></textarea>

@@ -175,6 +175,7 @@ textarea:focus {
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 button {
@@ -727,4 +728,53 @@ h1 {
     color: var(--text);
     font-size: 16px;
     font-weight: 500;
+}
+
+.more-options-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+    background-color: var(--primary) !important;
+    color: var(--button-text) !important;
+    border: 1px solid var(--border);
+}
+
+.more-options-button .chevron-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.more-options-button.active .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.more-options-button:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+.more-options-container {
+    display: none;
+    animation: slideDown 0.3s ease-out;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.more-options-container .button-container {
+    width: 100%;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

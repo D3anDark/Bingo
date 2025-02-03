@@ -424,3 +424,13 @@ window.onload = function() {
     // Wczytaj resztę zapisanego stanu
     loadSavedState();
 }
+
+// Dodaj nową funkcję
+function toggleMoreOptions() {
+    const button = document.querySelector('.more-options-button');
+    const container = document.querySelector('.more-options-container');
+    const isVisible = container.style.display === 'block';
+    
+    button.classList.toggle('active');
+    container.style.display = isVisible ? 'none' : 'block';
+}
