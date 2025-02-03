@@ -508,6 +508,7 @@ button:hover {
 .modal-header {
     padding: 24px 30px;
     border-bottom: 1px solid var(--border);
+    
 }
 
 .modal-header h2 {
