@@ -415,15 +415,32 @@ function toggleTheme() {
     localStorage.setItem('theme', newTheme);
 }
 
-// Dodaj do window.onload
+// Zaktualizowany window.onload do ustawiania motywu według preferencji systemowych
 window.onload = function() {
-    // Wczytaj zapisany motyw
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    // Sprawdź, czy użytkownik wcześniej zapisał motyw
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+        // Użyj motywu systemowego
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initialTheme = systemPrefersDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', initialTheme);
+
+        // Opcjonalnie: nasłuchiwanie zmian w preferencjach systemowych
+        window.matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', e => {
+                // Aktualizuj motyw tylko, jeśli użytkownik nie nadpisał wyboru
+                if (!localStorage.getItem('theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                }
+            });
+    }
     
     // Wczytaj resztę zapisanego stanu
     loadSavedState();
-}
+};
 
 // Dodaj nową funkcję
 function toggleMoreOptions() {
