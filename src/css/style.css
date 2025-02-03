@@ -462,6 +462,7 @@ button:hover {
     display: block;
 }
 
+<<<<<<< HEAD
 /* Nowa animacja dla tła modala */
 @keyframes fadeInOverlay {
     from {
@@ -475,6 +476,11 @@ button:hover {
 /* Zmodyfikowany modal */
 .modal {
     display: none; /* modal ukryty domyślnie */
+=======
+/* Modal styles */
+.modal {
+    display: none; /* ukryty domyślnie */
+>>>>>>> a7e7734f9777557f37b5e68545c85a2b3764eb49
     position: fixed;
     top: 0;
     left: 0;
@@ -485,7 +491,10 @@ button:hover {
     background-color: var(--modal-overlay);
     z-index: 1000;
     backdrop-filter: blur(5px);
+<<<<<<< HEAD
     animation: fadeInOverlay 0.3s ease-out;
+=======
+>>>>>>> a7e7734f9777557f37b5e68545c85a2b3764eb49
 }
 
 .modal-content {
@@ -496,13 +505,19 @@ button:hover {
     background-color: var(--surface);
     width: 90%;
     max-width: 500px;
+<<<<<<< HEAD
     max-height: 90vh; /* zapobiega wyjściu poza ekran */
     overflow-y: auto; /* umożliwia przewijanie w razie potrzeby */
+=======
+>>>>>>> a7e7734f9777557f37b5e68545c85a2b3764eb49
     border-radius: 24px;
     box-shadow: 0 15px 30px var(--shadow);
     animation: slideIn 0.3s ease-out;
     overflow: hidden;
+<<<<<<< HEAD
     will-change: transform, opacity;
+=======
+>>>>>>> a7e7734f9777557f37b5e68545c85a2b3764eb49
 }
 
 .modal-header {
@@ -588,6 +603,7 @@ button:hover {
     min-width: 120px;
 }
 
+<<<<<<< HEAD
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -596,6 +612,17 @@ button:hover {
     to {
         opacity: 1;
         transform: translate(-50%, -50%);
+=======
+/* Animation */
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+>>>>>>> a7e7734f9777557f37b5e68545c85a2b3764eb49
     }
 }
 
