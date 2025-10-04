@@ -187,6 +187,11 @@ function removeBlock(button) {
 
 function showBulkInput() {
     document.getElementById('bulkInputContainer').style.display = 'block';
+    const bulkInput = document.getElementById('bulkInput');
+    if (bulkInput) {
+        bulkInput.style.height = 'auto';
+        bulkInput.style.height = bulkInput.scrollHeight + 'px';
+    }
 }
 
 function hideBulkInput() {
@@ -451,3 +456,17 @@ function toggleMoreOptions() {
     button.classList.toggle('active');
     container.style.display = isVisible ? 'none' : 'block';
 }
+// Automatyczne powiększanie textarea dla bulkInput
+document.addEventListener('DOMContentLoaded', function() {
+    var bulkInput = document.getElementById('bulkInput');
+    if (bulkInput) {
+        bulkInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        bulkInput.addEventListener('focus', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    }
+});
