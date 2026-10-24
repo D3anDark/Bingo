@@ -72,7 +72,7 @@
 
 	<footer class="label">
 		<a href="https://github.com/D3anDark/Bingo">GitHub</a>
-		<span>DeanDark</span>
+		<a href="https://deandark.me">DeanDark</a>
 	</footer>
 </div>
 
