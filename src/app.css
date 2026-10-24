@@ -1,0 +1,248 @@
+:root {
+	--font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+	--font-dot: 'Doto', var(--font-mono);
+
+	--text-xs: 0.75rem;
+	--text-sm: 0.8125rem;
+	--text-base: 0.9375rem;
+
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--space-12: 3rem;
+
+	--radius-sm: 0.25rem;
+	--radius: 0.5rem;
+	--radius-full: 999px;
+
+	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+	/* Layers, lowest first. */
+	--z-sticky: 1;
+	--z-overlay: 2;
+	--z-toast: 3;
+
+	--accent: #d71921;
+	--accent-fg: #ffffff;
+
+	color-scheme: dark;
+	--bg: #000000;
+	--fg: #fafafa;
+	--muted: #262626;
+	--muted-fg: #a1a1a1;
+	--surface: #0a0a0a;
+	--border: #ffffff1a;
+	--border-strong: #ffffff33;
+	--dot: #ffffff14;
+	--accent-text: #ff5247;
+}
+
+:root[data-theme='light'] {
+	color-scheme: light;
+	--bg: #f4f4f2;
+	--fg: #0a0a0a;
+	--muted: #e4e4e1;
+	--muted-fg: #5c5c5c;
+	--surface: #ffffff;
+	--border: #0000001a;
+	--border-strong: #00000033;
+	--dot: #00000017;
+	--accent-text: #c4161c;
+}
+
+@media (prefers-color-scheme: light) {
+	:root:not([data-theme='dark']) {
+		color-scheme: light;
+		--bg: #f4f4f2;
+		--fg: #0a0a0a;
+		--muted: #e4e4e1;
+		--muted-fg: #5c5c5c;
+		--surface: #ffffff;
+		--border: #0000001a;
+		--border-strong: #00000033;
+		--dot: #00000017;
+		--accent-text: #c4161c;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	min-height: 100dvh;
+	background-color: var(--bg);
+	background-image: radial-gradient(var(--dot) 1px, transparent 1.5px);
+	background-size: 18px 18px;
+	color: var(--fg);
+	font-family: var(--font-sans);
+	font-size: var(--text-base);
+	line-height: 1.55;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+p {
+	margin: 0;
+}
+
+a {
+	color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+}
+
+:focus-visible {
+	outline: 2px solid var(--fg);
+	outline-offset: 2px;
+}
+
+::selection {
+	background: var(--accent);
+	color: var(--accent-fg);
+}
+
+/* Inline code chip, as in running text. */
+code {
+	font-family: var(--font-mono);
+	font-size: 0.9em;
+	background: var(--muted);
+	border-radius: var(--radius-sm);
+	padding: 0.1em 0.35em;
+}
+
+/* Mono uppercase caption: section labels, counters, status. */
+.label {
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--muted-fg);
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	min-height: 2.25rem;
+	padding: 0 var(--space-3);
+	border: 1px solid transparent;
+	border-radius: var(--radius);
+	background: var(--muted);
+	font-size: var(--text-sm);
+	font-weight: 500;
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color 0.15s,
+		opacity 0.15s,
+		transform 0.15s var(--ease-out);
+}
+
+.btn:hover {
+	background: var(--border-strong);
+}
+
+.btn:active {
+	transform: scale(0.97);
+}
+
+.btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.btn.primary {
+	background: var(--fg);
+	color: var(--bg);
+}
+
+.btn.primary:hover {
+	opacity: 0.85;
+}
+
+.btn.ghost {
+	background: transparent;
+	border-color: var(--border);
+}
+
+.btn.ghost:hover {
+	background: var(--muted);
+}
+
+.btn.danger {
+	color: var(--accent-text);
+}
+
+.btn svg {
+	width: 1rem;
+	height: 1rem;
+	flex: none;
+}
+
+.icon-btn {
+	width: 2.25rem;
+	padding: 0;
+}
+
+.input {
+	width: 100%;
+	min-height: 2.25rem;
+	padding: var(--space-2) var(--space-3);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--surface);
+	font-size: var(--text-sm);
+	transition: border-color 0.15s;
+}
+
+.input::placeholder {
+	color: var(--muted-fg);
+}
+
+.input:hover {
+	border-color: var(--border-strong);
+}
+
+.input:focus-visible {
+	outline: none;
+	border-color: var(--fg);
+}
+
+.card {
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--surface);
+	padding: var(--space-4);
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
