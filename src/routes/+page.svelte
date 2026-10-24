@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
 	import Board from '#lib/Board.svelte';
 	import Rules from '#lib/Rules.svelte';
 	import { api, describe } from '#lib/api.ts';
@@ -17,6 +16,7 @@
 	} from '#lib/bingo.ts';
 	import { i18n } from '#lib/i18n.svelte.ts';
 	import { load, save, seatKey, type Seat } from '#lib/storage.ts';
+	import { roomPath, streamer } from '#lib/streamer.svelte.ts';
 
 	type Solo = {
 		items: string[];
@@ -102,7 +102,7 @@
 			});
 			save('bingo:name', name.trim());
 			save(seatKey(res.code), { id: res.id, token: res.token });
-			await goto(resolve('/r/[code]', { code: res.code }));
+			await goto(roomPath(res.code));
 		} catch (err) {
 			roomNote = () => describe(err);
 		} finally {
@@ -114,7 +114,7 @@
 
 	function joinRoom(e: SubmitEvent) {
 		e.preventDefault();
-		if (CODE_RE.test(normalizedCode)) goto(resolve('/r/[code]', { code: normalizedCode }));
+		if (CODE_RE.test(normalizedCode)) goto(roomPath(normalizedCode));
 		else roomNote = () => t.badCode;
 	}
 
@@ -328,6 +328,7 @@
 				<span class="label">{t.roomCode}</span>
 				<input
 					class="input code-input"
+					type={streamer.on ? 'password' : 'text'}
 					bind:value={joinCode}
 					maxlength="8"
 					placeholder="K7QX2M"

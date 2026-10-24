@@ -12,6 +12,7 @@ const pl = {
 	tagline: 'Plansze na imprezy, streamy i spotkania',
 	home: 'Bingo, strona główna',
 	theme: 'Zmień motyw',
+	streamer: 'Tryb streamera: ukrywa kod pokoju',
 	otherLang: { code: 'en', short: 'EN', label: 'Switch to English' },
 
 	// Odd entries render as <code> chips.
@@ -88,6 +89,9 @@ const pl = {
 	connecting: 'Łączę',
 	offline: 'Brak połączenia, ponawiam',
 	codeLabel: (spelled: string) => `Kod pokoju: ${spelled}`,
+	codeHidden: 'Kod pokoju ukryty',
+	streamerHint: 'Tryb streamera: kod jest ukryty, także w pasku adresu. Skopiuj link przyciskiem powyżej i wyślij go znajomym poza streamem.',
+	copyFailed: 'Nie udało się skopiować linku.',
 	copyLink: 'Kopiuj link',
 	copied: 'Skopiowano',
 	copyPrompt: 'Skopiuj link:',
@@ -129,6 +133,7 @@ const en: typeof pl = {
 	tagline: 'Boards for parties, streams and meetings',
 	home: 'Bingo, home',
 	theme: 'Toggle theme',
+	streamer: 'Streamer mode: hides the room code',
 	otherLang: { code: 'pl', short: 'PL', label: 'Przełącz na polski' },
 
 	intro: [
@@ -202,6 +207,9 @@ const en: typeof pl = {
 	connecting: 'Connecting',
 	offline: 'Offline, retrying',
 	codeLabel: (spelled) => `Room code: ${spelled}`,
+	codeHidden: 'Room code hidden',
+	streamerHint: 'Streamer mode: the code is hidden, in the address bar too. Copy the link with the button above and send it to friends off stream.',
+	copyFailed: 'Could not copy the link.',
 	copyLink: 'Copy link',
 	copied: 'Copied',
 	copyPrompt: 'Copy the link:',

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import Board from '#lib/Board.svelte';
@@ -8,13 +9,14 @@
 	import { CODE_RE, LIMITS, needed, winningLines, type RoomState } from '#lib/bingo.ts';
 	import { i18n } from '#lib/i18n.svelte.ts';
 	import { load, save, seatKey, type Seat } from '#lib/storage.ts';
+	import { rememberedRoom, roomPath, streamer } from '#lib/streamer.svelte.ts';
 
 	const t = $derived(i18n.t);
 
 	const POLL_MS = 3000;
 	const MAX_BACKOFF_MS = 30_000;
 
-	const code = (page.params.code ?? '').toUpperCase();
+	const code = (page.params.code ?? rememberedRoom() ?? '').toUpperCase();
 	const invalid = !CODE_RE.test(code);
 
 	let seat = $state<Seat | null>(load<Seat>(seatKey(code)));
@@ -190,7 +192,7 @@
 	const winner = $derived(room?.players.find((p) => p.bingoAt));
 
 	let copied = $state(false);
-	const link = $derived(page.url.origin + resolve('/r/[code]', { code }));
+	const link = $derived(page.url.origin + resolve('/r/[[code]]', { code }));
 
 	async function copyLink() {
 		try {
@@ -198,9 +200,31 @@
 			copied = true;
 			setTimeout(() => (copied = false), 2000);
 		} catch {
-			prompt(t.copyPrompt, link);
+			// The prompt would show the link on stream.
+			if (streamer.on) announce(t.copyFailed);
+			else prompt(t.copyPrompt, link);
 		}
 	}
+
+	// Follows the streamer toggle: drops the code from the address bar or puts it back.
+	// page.url keeps the pre-shallow URL, so compare with the real address bar.
+	$effect(() => {
+		const path = roomPath(code);
+		if (!invalid && location.pathname !== path) goto(path, { shallow: true, replace: true });
+	});
+
+	// Characters outside the code alphabet, so the noise never reads as a joinable code.
+	const NOISE = '#%&*+=?@';
+	let noise = $state('');
+	$effect(() => {
+		if (!streamer.on) return;
+		const roll = () =>
+			(noise = Array.from(code, () => NOISE[Math.floor(Math.random() * NOISE.length)]).join(''));
+		roll();
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const timer = setInterval(roll, 150);
+		return () => clearInterval(timer);
+	});
 
 	const canShare = typeof navigator !== 'undefined' && 'share' in navigator;
 
@@ -212,7 +236,7 @@
 </script>
 
 <svelte:head>
-	<title>{room?.title ?? 'Bingo'} · {code}</title>
+	<title>{room?.title ?? 'Bingo'}{streamer.on ? '' : ` · ${code}`}</title>
 </svelte:head>
 
 {#if status === 'missing'}
@@ -230,7 +254,13 @@
 				{status === 'offline' ? t.offline : status === 'loading' ? t.connecting : t.live}
 			</p>
 		</div>
-		<h1 class="code" aria-label={t.codeLabel(code.split('').join(' '))}>{code}</h1>
+		<h1
+			class="code"
+			class:muted-dot={streamer.on}
+			aria-label={streamer.on ? t.codeHidden : t.codeLabel(code.split('').join(' '))}
+		>
+			{streamer.on ? noise : code}
+		</h1>
 		<div class="actions">
 			<button type="button" class="btn" onclick={copyLink}>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -238,10 +268,11 @@
 				</svg>
 				{copied ? t.copied : t.copyLink}
 			</button>
-			{#if canShare}
+			{#if canShare && !streamer.on}
 				<button type="button" class="btn ghost" onclick={share}>{t.share}</button>
 			{/if}
 		</div>
+		{#if streamer.on}<p class="muted">{t.streamerHint}</p>{/if}
 	</section>
 
 	{#if !seat}

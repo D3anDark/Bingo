@@ -6,6 +6,7 @@
 	import '../app.css';
 	import { resolve } from '$app/paths';
 	import { i18n } from '#lib/i18n.svelte.ts';
+	import { streamer } from '#lib/streamer.svelte.ts';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
@@ -56,6 +57,20 @@
 				aria-label={t.otherLang.label}
 			>
 				{t.otherLang.short}
+			</button>
+			<button
+				type="button"
+				class="btn ghost icon-btn streamer"
+				onclick={streamer.toggle}
+				aria-pressed={streamer.on}
+				aria-label={t.streamer}
+				title={t.streamer}
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+					<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+					<circle cx="12" cy="12" r="3" />
+					{#if streamer.on}<path d="M3 3l18 18" />{/if}
+				</svg>
 			</button>
 			<button type="button" class="btn ghost icon-btn" onclick={toggleTheme} aria-label={t.theme}>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -122,6 +137,10 @@
 		display: flex;
 		flex: none;
 		gap: var(--space-1);
+	}
+
+	.streamer[aria-pressed='true'] {
+		color: var(--accent-text);
 	}
 
 	.lang {
