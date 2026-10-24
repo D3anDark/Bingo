@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import Board from '#lib/Board.svelte';
 	import { api, describe } from '#lib/api.ts';
 	import {
@@ -100,7 +101,7 @@
 			});
 			save('bingo:name', name.trim());
 			save(seatKey(res.code), { id: res.id, token: res.token });
-			await goto(`/r/${res.code}`);
+			await goto(resolve('/r/[code]', { code: res.code }));
 		} catch (err) {
 			roomNote = () => describe(err);
 		} finally {
@@ -112,7 +113,7 @@
 
 	function joinRoom(e: SubmitEvent) {
 		e.preventDefault();
-		if (CODE_RE.test(normalizedCode)) goto(`/r/${normalizedCode}`);
+		if (CODE_RE.test(normalizedCode)) goto(resolve('/r/[code]', { code: normalizedCode }));
 		else roomNote = () => t.badCode;
 	}
 

@@ -1,3 +1,4 @@
+import { API_ORIGIN } from '$app/env/public';
 import { i18n } from './i18n.svelte.ts';
 
 /** A non-2xx response. `code` is the API's error code, translated by `describe`. */
@@ -13,7 +14,7 @@ export class ApiError extends Error {
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
-	const res = await fetch(path, {
+	const res = await fetch((API_ORIGIN ?? '') + path, {
 		...init,
 		headers: { accept: 'application/json', 'content-type': 'application/json', ...init.headers }
 	});

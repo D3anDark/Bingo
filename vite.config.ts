@@ -1,6 +1,9 @@
-import adapter from '@sveltejs/adapter-vercel';
+import staticAdapter from '@sveltejs/adapter-static';
+import vercelAdapter from '@sveltejs/adapter-vercel';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+
+const base = process.env.BASE_PATH ?? '';
 
 export default defineConfig({
 	plugins: [
@@ -10,8 +13,11 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			// Same region as the Upstash database (eu-central-1), so each Redis call stays local.
-			adapter: adapter({ regions: ['fra1'] })
+			// BASE_PATH set: static copy for GitHub Pages (deandark.me/Bingo) that calls the Vercel API.
+			// 404.html doubles as the SPA fallback, so /Bingo/r/CODE links still open the room.
+			// Otherwise: Vercel, in the same region as the Upstash database so Redis calls stay local.
+			adapter: base ? staticAdapter({ fallback: '404.html' }) : vercelAdapter({ regions: ['fra1'] }),
+			paths: { base: base as '' | `/${string}` }
 		})
 	]
 });

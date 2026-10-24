@@ -4,6 +4,7 @@
 	import '@fontsource/doto/800.css';
 	import '@fontsource/doto/900.css';
 	import '../app.css';
+	import { resolve } from '$app/paths';
 	import { i18n } from '#lib/i18n.svelte.ts';
 	import type { LayoutProps } from './$types';
 
@@ -21,7 +22,7 @@
 		const next = current === 'dark' ? 'light' : 'dark';
 		root.dataset.theme = next;
 		try {
-			localStorage.setItem('theme', next);
+			localStorage.setItem('bingo:theme', next);
 		} catch {
 			// Theme still switches for this visit.
 		}
@@ -30,7 +31,7 @@
 
 <div class="page">
 	<header>
-		<a href="/" class="brand" aria-label={t.home}>
+		<a href={resolve('/')} class="brand" aria-label={t.home}>
 			<svg class="logo" viewBox="0 0 20 20" aria-hidden="true">
 				{#each { length: 25 }, i (i)}
 					<circle

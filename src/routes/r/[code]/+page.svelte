@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import Board from '#lib/Board.svelte';
 	import { ApiError, api, describe } from '#lib/api.ts';
@@ -188,7 +189,7 @@
 	const winner = $derived(room?.players.find((p) => p.bingoAt));
 
 	let copied = $state(false);
-	const link = $derived(`${page.url.origin}/r/${code}`);
+	const link = $derived(page.url.origin + resolve('/r/[code]', { code }));
 
 	async function copyLink() {
 		try {
@@ -217,7 +218,7 @@
 	<section class="center">
 		<p class="dot-big muted-dot" aria-hidden="true">404</p>
 		<p>{problem?.()}</p>
-		<a class="btn primary" href="/">{t.backHome}</a>
+		<a class="btn primary" href={resolve('/')}>{t.backHome}</a>
 	</section>
 {:else}
 	<section class="head">
