@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import Board from '#lib/Board.svelte';
+	import Rules from '#lib/Rules.svelte';
 	import { api, describe } from '#lib/api.ts';
 	import {
 		CODE_RE,
@@ -156,7 +157,7 @@
 	}
 
 	function resetAll() {
-		if (confirm(t.confirmDelete)) s = fresh();
+		if (confirm(t.confirmDelete)) s = { ...fresh(), size: s.size, free: s.free };
 	}
 </script>
 
@@ -283,6 +284,19 @@
 	{:else}
 		<p class="muted">{t.noItems}</p>
 	{/if}
+
+	<div class="actions">
+		<button type="button" class="btn ghost" onclick={exportData} disabled={!s.items.length}>
+			{t.exportFile}
+		</button>
+		<label class="btn ghost">
+			{t.importFile}
+			<input type="file" accept=".json,application/json" class="visually-hidden" onchange={importData} />
+		</label>
+		<button type="button" class="btn ghost danger" onclick={resetAll} disabled={!s.items.length}>
+			{t.deleteAll}
+		</button>
+	</div>
 </section>
 
 <section aria-labelledby="room-h">
@@ -326,23 +340,12 @@
 		</form>
 	</div>
 	<p class="label note hit" aria-live="polite">{roomNote?.() ?? ''}</p>
+	<h3 class="label">{t.rules}</h3>
+	<Rules />
 </section>
 
-<details class="more">
-	<summary class="label">{t.more}</summary>
-	<div class="actions">
-		<button type="button" class="btn ghost" onclick={exportData}>{t.exportFile}</button>
-		<label class="btn ghost">
-			{t.importFile}
-			<input type="file" accept=".json,application/json" class="visually-hidden" onchange={importData} />
-		</label>
-		<button type="button" class="btn ghost danger" onclick={resetAll}>{t.deleteAll}</button>
-	</div>
-</details>
-
 <style>
-	section,
-	.more {
+	section {
 		display: grid;
 		gap: var(--space-3);
 		margin-bottom: var(--space-12);
@@ -605,14 +608,5 @@
 		font-family: var(--font-mono);
 		letter-spacing: 0.3em;
 		text-transform: uppercase;
-	}
-
-	.more summary {
-		cursor: pointer;
-		width: fit-content;
-	}
-
-	.more summary:hover {
-		color: var(--fg);
 	}
 </style>

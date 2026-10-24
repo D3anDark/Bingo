@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import Board from '#lib/Board.svelte';
+	import Rules from '#lib/Rules.svelte';
 	import { ApiError, api, describe } from '#lib/api.ts';
 	import { CODE_RE, LIMITS, needed, winningLines, type RoomState } from '#lib/bingo.ts';
 	import { i18n } from '#lib/i18n.svelte.ts';
@@ -311,6 +312,11 @@
 		{:else}
 			<p class="muted">{t.nobody}</p>
 		{/if}
+	</section>
+
+	<section aria-labelledby="rules-h">
+		<h2 id="rules-h" class="label">{t.rules}</h2>
+		<Rules />
 	</section>
 {/if}
 
