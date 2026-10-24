@@ -76,12 +76,27 @@ function memoryKv(): Kv {
 
 function connect(): Kv {
 	if (KV_REST_API_URL && KV_REST_API_TOKEN) {
-		return new Redis({
+		const redis = new Redis({
 			url: KV_REST_API_URL,
 			token: KV_REST_API_TOKEN,
 			automaticDeserialization: false,
 			signal: () => AbortSignal.timeout(5000)
 		});
+		return {
+			hsetnx: (key, field, value) => redis.hsetnx(key, field, value),
+			hset: (key, kv) => redis.hset(key, kv),
+			hget: (key, field) => redis.hget(key, field),
+			// With automaticDeserialization off the client skips its own parsing too, so HGETALL
+			// arrives as the raw [field, value, ...] reply despite its object return type.
+			hgetall: async (key) => {
+				const flat = (await redis.hgetall(key)) as unknown as string[];
+				const hash: Record<string, string> = {};
+				for (let i = 0; i < flat.length; i += 2) hash[flat[i]] = flat[i + 1];
+				return hash;
+			},
+			expire: (key, seconds) => redis.expire(key, seconds),
+			incr: (key) => redis.incr(key)
+		};
 	}
 	if (!dev) throw new Error('KV_REST_API_URL and KV_REST_API_TOKEN must be set');
 	return memoryKv();
