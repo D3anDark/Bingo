@@ -1,3 +1,4 @@
+import { resolve } from '$app/paths';
 import { load, save } from './storage.ts';
 
 const plRules = new Intl.PluralRules('pl');
@@ -257,6 +258,8 @@ const dict = { pl, en };
 const KEY = 'bingo:lang';
 
 function initial(): Lang {
+	// An English link (/en) wins over the saved choice for that visit; it is not saved.
+	if (location.pathname === resolve('/en')) return 'en';
 	const saved = load<string>(KEY);
 	if (saved === 'pl' || saved === 'en') return saved;
 	return navigator.languages.some((l) => l.toLowerCase().startsWith('pl')) ? 'pl' : 'en';

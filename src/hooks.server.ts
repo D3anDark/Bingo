@@ -1,4 +1,5 @@
 import type { Handle } from '@sveltejs/kit/hooks';
+import { meta } from '#lib/server/meta.ts';
 
 // The GitHub Pages copy at deandark.me/Bingo calls this API cross-origin.
 const CORS = {
@@ -14,7 +15,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (api && event.request.method === 'OPTIONS') {
 		return new Response(null, { status: 204, headers: CORS });
 	}
-	const response = await resolve(event);
+	const tags = meta[event.route.id === '/en' ? 'en' : 'pl'];
+	const response = await resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%bingo.meta%', tags)
+	});
 	if (api) for (const [name, value] of Object.entries(CORS)) response.headers.set(name, value);
 	return response;
 };
