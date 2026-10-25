@@ -2,6 +2,8 @@ import type { Lang } from '#lib/i18n.svelte.ts';
 
 // Link preview tags, rendered into the static HTML by hooks.server.ts.
 // Absolute URLs, since link previews (Discord and others) resolve nothing relative.
+// An image URL never changes content: Discord caches by URL, and swapping og.png from the
+// Polish board to the English one showed a mix of both.
 const HOME = 'https://deandark.me/Bingo/';
 
 const copy = {
@@ -29,7 +31,7 @@ const copy = {
 		description:
 			'Make bingo boards for parties, streams and meetings. Play solo or with friends using an invite code.',
 		summary: 'Bingo boards. Solo or with friends using an invite code.',
-		image: HOME + 'og.png',
+		image: HOME + 'og-en.png',
 		alt: 'Sample 5×5 board with a diagonal bingo',
 		kicker: 'DeanDark · bingo boards',
 		lead: 'Make boards for parties, streams and meetings. Play solo or with friends using an invite code.',
