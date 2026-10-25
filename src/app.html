@@ -10,13 +10,18 @@
 		<meta property="og:title" content="Bingo" />
 		<meta property="og:description" content="Plansze bingo. Sam albo ze znajomymi na kod zaproszenia." />
 		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="DeanDark" />
 		<meta property="og:locale" content="pl_PL" />
 		<!-- Absolute, since link previews (Discord and others) resolve nothing relative. -->
 		<meta property="og:image" content="https://deandark.me/Bingo/og.png" />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
-		<meta property="og:image:alt" content="Bingo: plansze na imprezy, streamy i spotkania" />
+		<meta property="og:image:alt" content="Przykładowa plansza 5×5 z bingo po przekątnej" />
 		<meta name="twitter:card" content="summary_large_image" />
+		<!-- Discord component embed: a Components V2 card in place of the Open Graph preview.
+		     Discord runs no JS, so it lives here; over 3,000 bytes it silently falls back to the tags above.
+		     https://docs.discord.com/developers/link-previews/component-embeds -->
+		<script id="discord:component-embed" type="application/json">{"component":{"type":17,"accent_color":14096673,"components":[{"type":12,"items":[{"media":{"url":"https://deandark.me/Bingo/og.png"},"description":"Przykładowa plansza 5×5 z bingo po przekątnej"}]},{"type":9,"components":[{"type":10,"content":"# [Bingo](https://deandark.me/Bingo/)\n-# DeanDark · plansze bingo\nTwórz plansze na imprezy, streamy i spotkania. Graj sam albo ze znajomymi na kod zaproszenia."}],"accessory":{"type":11,"media":{"url":"https://deandark.me/Bingo/apple-touch-icon.png"}}},{"type":14},{"type":10,"content":"**Sam** · własne hasła, plansze zapisane w przeglądarce, eksport do pliku\n**Ze znajomymi** · pokój na kod, każdy dostaje pola w innej kolejności\n**Tryb streamera** · kod pokoju ukryty na ekranie i w pasku adresu\n-# Plansze od 3×3 do 6×6, do 50 graczy w pokoju"},{"type":1,"components":[{"type":2,"style":5,"url":"https://deandark.me/Bingo/","label":"Zagraj"},{"type":2,"style":5,"url":"https://github.com/D3anDark/Bingo","label":"GitHub"},{"type":2,"style":5,"url":"https://deandark.me/","label":"deandark.me"}]}]}}</script>
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 		<script>
