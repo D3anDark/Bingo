@@ -268,6 +268,14 @@
 				</svg>
 				{copied ? t.copied : t.copyLink}
 			</button>
+			<button type="button" class="btn ghost" onclick={streamer.toggle}>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+					<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+					<circle cx="12" cy="12" r="3" />
+					{#if streamer.on}<path d="M3 3l18 18" />{/if}
+				</svg>
+				{streamer.on ? t.showCode : t.hideCode}
+			</button>
 			{#if canShare && !streamer.on}
 				<button type="button" class="btn ghost" onclick={share}>{t.share}</button>
 			{/if}

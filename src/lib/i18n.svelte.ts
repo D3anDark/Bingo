@@ -13,6 +13,9 @@ const pl = {
 	home: 'Bingo, strona główna',
 	theme: 'Zmień motyw',
 	streamer: 'Tryb streamera: ukrywa kod pokoju',
+	streamerShort: 'Streamer',
+	hideCode: 'Ukryj kod',
+	showCode: 'Pokaż kod',
 	otherLang: { code: 'en', short: 'EN', label: 'Switch to English' },
 
 	// Odd entries render as <code> chips.
@@ -134,6 +137,9 @@ const en: typeof pl = {
 	home: 'Bingo, home',
 	theme: 'Toggle theme',
 	streamer: 'Streamer mode: hides the room code',
+	streamerShort: 'Streamer',
+	hideCode: 'Hide code',
+	showCode: 'Show code',
 	otherLang: { code: 'pl', short: 'PL', label: 'Przełącz na polski' },
 
 	intro: [

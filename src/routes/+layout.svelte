@@ -60,10 +60,9 @@
 			</button>
 			<button
 				type="button"
-				class="btn ghost icon-btn streamer"
+				class="btn streamer"
 				onclick={streamer.toggle}
 				aria-pressed={streamer.on}
-				aria-label={t.streamer}
 				title={t.streamer}
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -71,6 +70,7 @@
 					<circle cx="12" cy="12" r="3" />
 					{#if streamer.on}<path d="M3 3l18 18" />{/if}
 				</svg>
+				{t.streamerShort}
 			</button>
 			<button type="button" class="btn ghost icon-btn" onclick={toggleTheme} aria-label={t.theme}>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -139,8 +139,10 @@
 		gap: var(--space-1);
 	}
 
-	.streamer[aria-pressed='true'] {
-		color: var(--accent-text);
+	.streamer[aria-pressed='true'],
+	.streamer[aria-pressed='true']:hover {
+		background: var(--accent);
+		color: var(--accent-fg);
 	}
 
 	.lang {
