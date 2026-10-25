@@ -14,7 +14,7 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			// BASE_PATH set: static copy for GitHub Pages (deandark.me/Bingo) that calls the Vercel API.
-			// 404.html doubles as the SPA fallback, so /Bingo/r/CODE links still open the room.
+			// 404.html doubles as the SPA fallback, so old /Bingo/r/CODE links still open the room.
 			// Otherwise: Vercel, in the same region as the Upstash database so Redis calls stay local.
 			adapter: base ? staticAdapter({ fallback: '404.html' }) : vercelAdapter({ regions: ['fra1'] }),
 			paths: { base: base as '' | `/${string}` }

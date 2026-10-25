@@ -9,14 +9,14 @@
 	import { CODE_RE, LIMITS, needed, winningLines, type RoomState } from '#lib/bingo.ts';
 	import { i18n } from '#lib/i18n.svelte.ts';
 	import { load, save, seatKey, type Seat } from '#lib/storage.ts';
-	import { rememberedRoom, roomPath, streamer } from '#lib/streamer.svelte.ts';
+	import { invitePath, rememberedRoom, roomPath, streamer } from '#lib/streamer.svelte.ts';
 
 	const t = $derived(i18n.t);
 
 	const POLL_MS = 3000;
 	const MAX_BACKOFF_MS = 30_000;
 
-	const code = (page.params.code ?? rememberedRoom() ?? '').toUpperCase();
+	const code = (page.params.code || page.url.search.slice(1) || rememberedRoom() || '').toUpperCase();
 	const invalid = !CODE_RE.test(code);
 
 	let seat = $state<Seat | null>(load<Seat>(seatKey(code)));
@@ -192,7 +192,7 @@
 	const winner = $derived(room?.players.find((p) => p.bingoAt));
 
 	let copied = $state(false);
-	const link = $derived(page.url.origin + resolve('/r/[[code]]', { code }));
+	const link = $derived(page.url.origin + invitePath(code));
 
 	async function copyLink() {
 		try {
@@ -210,7 +210,9 @@
 	// page.url keeps the pre-shallow URL, so compare with the real address bar.
 	$effect(() => {
 		const path = roomPath(code);
-		if (!invalid && location.pathname !== path) goto(path, { shallow: true, replace: true });
+		if (!invalid && location.pathname + location.search !== path) {
+			goto(path, { shallow: true, replace: true });
+		}
 	});
 
 	// Characters outside the code alphabet, so the noise never reads as a joinable code.

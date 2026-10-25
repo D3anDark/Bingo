@@ -26,9 +26,12 @@ export function rememberedRoom(): string | null {
 	}
 }
 
+/** Invite link path; /r?CODE rather than /r/CODE so GitHub Pages serves it with a 200. */
+export const invitePath = (code: string) => `${resolve('/r/[[code]]', {})}?${code}`;
+
 /** Where a room lives in the address bar: without its code while streaming. */
 export function roomPath(code: string) {
-	if (!on) return resolve('/r/[[code]]', { code });
+	if (!on) return invitePath(code);
 	try {
 		sessionStorage.setItem(ROOM, code);
 	} catch {
