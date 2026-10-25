@@ -6,12 +6,12 @@ const HOME = 'https://deandark.me/Bingo/';
 
 const copy = {
 	pl: {
-		url: HOME,
+		url: HOME + 'pl',
 		locale: 'pl_PL',
 		description:
 			'Twórz plansze bingo na imprezy, streamy i spotkania. Graj sam albo ze znajomymi na kod zaproszenia.',
 		summary: 'Plansze bingo. Sam albo ze znajomymi na kod zaproszenia.',
-		image: HOME + 'og.png',
+		image: HOME + 'og-pl.png',
 		alt: 'Przykładowa plansza 5×5 z bingo po przekątnej',
 		kicker: 'DeanDark · plansze bingo',
 		lead: 'Twórz plansze na imprezy, streamy i spotkania. Graj sam albo ze znajomymi na kod zaproszenia.',
@@ -24,12 +24,12 @@ const copy = {
 		play: 'Zagraj'
 	},
 	en: {
-		url: HOME + 'en',
+		url: HOME,
 		locale: 'en_US',
 		description:
 			'Make bingo boards for parties, streams and meetings. Play solo or with friends using an invite code.',
 		summary: 'Bingo boards. Solo or with friends using an invite code.',
-		image: HOME + 'og-en.png',
+		image: HOME + 'og.png',
 		alt: 'Sample 5×5 board with a diagonal bingo',
 		kicker: 'DeanDark · bingo boards',
 		lead: 'Make boards for parties, streams and meetings. Play solo or with friends using an invite code.',

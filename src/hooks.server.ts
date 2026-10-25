@@ -15,9 +15,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (api && event.request.method === 'OPTIONS') {
 		return new Response(null, { status: 204, headers: CORS });
 	}
-	// Room invites preview in English whatever language the inviter uses.
-	const english = event.route.id === '/en' || event.route.id === '/r/[[code]]';
-	const tags = meta[english ? 'en' : 'pl'];
+	// Previews are English everywhere, room invites included; /pl is the Polish one.
+	const tags = meta[event.route.id === '/pl' ? 'pl' : 'en'];
 	const response = await resolve(event, {
 		transformPageChunk: ({ html }) => html.replace('%bingo.meta%', tags)
 	});
